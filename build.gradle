@@ -1,0 +1,24 @@
+plugins {
+    id 'java'
+}
+
+group = 'jpvu'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'io.appium:java-client:8.3.0'
+    implementation 'org.testng:testng:7.7.1'
+    implementation 'org.seleniumhq.selenium:selenium-support:4.7.2'
+    implementation 'org.seleniumhq.selenium:selenium-api:4.7.2'
+    implementation 'org.seleniumhq.selenium:selenium-java:4.7.2'
+}
+
+test {
+    useTestNG(){
+        suites "src/test/resources/TestNG.xml"
+    }
+}
