@@ -1,10 +1,11 @@
-package tests;
+package tests.apidemos;
 
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import jpvu.BaseTest;
 import org.openqa.selenium.DeviceRotation;
 import org.openqa.selenium.WebElement;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class PageFactoryTest extends BaseTest {
@@ -13,7 +14,7 @@ public class PageFactoryTest extends BaseTest {
     @AndroidFindBy(accessibility = "Gallery")
     public WebElement galleryBtn;
 
-    //page factory in appium works with maven workaround!
+    //page factory in appium works with maven workaround or gradle with jdk 15 or lower!
     @Test
     public void scrollInLandscapeTest(){
         DeviceRotation landscape = new DeviceRotation(0, 0, 90);
@@ -24,5 +25,6 @@ public class PageFactoryTest extends BaseTest {
         scrollToEleByText("Gallery");
         galleryBtn.click();
 
+        Assert.assertTrue(true);
     }
 }

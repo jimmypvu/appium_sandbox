@@ -3,8 +3,12 @@
 <suite name="TestNG Suite" verbose="2" parallel="none">
     <test name="Appium Tests">
         <packages>
-            <package name="tests" />
-            <package name="tests.gestures" />
+            <package name="tests.apidemos" />
+            <package name="tests.apidemos.gestures" />
         </packages>
+<!--        <classes>-->
+<!--            <class name="tests.apidemos.AlertDialogs" />-->
+<!--            <class name="tests.apidemos.DeviceOrientation" />-->
+<!--        </classes>-->
     </test>
 </suite>

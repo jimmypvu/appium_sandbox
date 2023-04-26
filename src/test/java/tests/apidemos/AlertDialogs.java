@@ -1,4 +1,4 @@
-package tests;
+package tests.apidemos;
 
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.pagefactory.AndroidFindBy;
@@ -12,42 +12,37 @@ import java.util.List;
 import java.util.Random;
 
 public class AlertDialogs extends BaseTest {
-    //can use page factory pattern on maven build, support for selenium pagefactory wasn't working with appium 8.3 + java 15 or later on gradle without workaround
     @AndroidFindBy(accessibility = "App")
     public WebElement appsBtn;
     @AndroidFindBy(accessibility = "Alert Dialogs")
     public WebElement alertsBtn;
-    @AndroidFindBy(accessibility = "List dialog")
-    public WebElement listDialogBtn;
     @AndroidFindBy(accessibility = "Single choice list")
     public WebElement singleChoiceListBtn;
+    @AndroidFindBy(xpath = "//android.widget.CheckedTextView")
+    public List<WebElement> choicesBtns;
+    @AndroidFindBy(xpath = "//android.widget.CheckedTextView[@text = 'Traffic']")
+    public WebElement trafficBtn;
+    @AndroidFindBy(id = "android:id/button1")
+    public WebElement okBtn;
+    @AndroidFindBy(accessibility = "List dialog")
+    public WebElement listDialogBtn;
     @AndroidFindBy(accessibility = "Text Entry dialog")
     public WebElement textEntryDialogBtn;
     @AndroidFindBy(accessibility = "Repeat alarm")
     public WebElement repeatAlarmBtn;
-    @AndroidFindBy(accessibility = "Ok Cancel dialog with Holo Light theme")
+    @AndroidFindBy(accessibility = "OK Cancel dialog with Holo Light theme")
     public WebElement okCancelDialogBtn;
     @AndroidFindBy(accessibility = "Progress dialog")
     public WebElement progressDialogBtn;
+    @AndroidFindBy(xpath = "//*[contains(@class, 'ProgressBar')]")
+    public WebElement progressBar;
 
-    public By appsBtnLoc = AppiumBy.accessibilityId("App");
-    public By alertsBtnLoc = AppiumBy.accessibilityId("Alert Dialogs");
-    public By listDialogBtnLoc = AppiumBy.accessibilityId("List dialog");
-    public By singleChoiceListBtnLoc = AppiumBy.accessibilityId("Single choice list");
-    public By textEntryDialogBtnLoc = AppiumBy.accessibilityId("Text Entry dialog");
-    public By repeatAlarmBtnLoc = AppiumBy.accessibilityId("Repeat alarm");
-    public By okCancelDialogBtnLoc = AppiumBy.accessibilityId("OK Cancel dialog with Holo Light theme");
-    public By progressDialogBtnLoc = AppiumBy.accessibilityId("Progress dialog");
 
     @Test
     public void radioBtnsAlert(){
-        driver.findElement(appsBtnLoc).click();
-        driver.findElement(alertsBtnLoc).click();
-        driver.findElement(singleChoiceListBtnLoc).click();
-
-        List<WebElement> choicesBtns = driver.findElements(By.xpath("//android.widget.CheckedTextView"));
-        WebElement trafficChoiceBtn = driver.findElement(By.xpath("//android.widget.CheckedTextView[@text = 'Traffic']"));
-        WebElement okBtn = driver.findElement(AppiumBy.id("android:id/button1"));
+        appsBtn.click();
+        alertsBtn.click();
+        singleChoiceListBtn.click();
 
         for(WebElement btn : choicesBtns){
             Assert.assertTrue(btn.isDisplayed(), "Radio buttons for choices should be displayed");
@@ -55,34 +50,32 @@ public class AlertDialogs extends BaseTest {
 
         Assert.assertEquals(choicesBtns.get(0).getAttribute("checked"), "true");
 
-        trafficChoiceBtn.click();
+        trafficBtn.click();
 
         Assert.assertEquals(choicesBtns.get(0).getAttribute("checked"), "false");
-        Assert.assertEquals(trafficChoiceBtn.getAttribute("checked"), "true");
+        Assert.assertEquals(trafficBtn.getAttribute("checked"), "true");
 
         okBtn.click();
 
-        driver.findElement(singleChoiceListBtnLoc).click();
-        List<WebElement> choicesBtnsAfterReopened = driver.findElements(By.xpath("//android.widget.CheckedTextView"));
+        singleChoiceListBtn.click();
 
-        for(WebElement btn : choicesBtnsAfterReopened){
-            if(!btn.getAttribute("text").contains("Traffic")){
-                Assert.assertEquals(btn.getAttribute("checked"), "false");
-            }else{
+        for(WebElement btn : choicesBtns){
+            if(btn.getAttribute("text").equals("Traffic")){
                 Assert.assertEquals(btn.getAttribute("checked"), "true");
+            }else{
+                Assert.assertEquals(btn.getAttribute("checked"), "false");
             }
         }
     }
 
     @Test
     public void textEntryAlert(){
-        driver.findElement(appsBtnLoc).click();
-        driver.findElement(alertsBtnLoc).click();
-        driver.findElement(textEntryDialogBtnLoc).click();
+        appsBtn.click();
+        alertsBtn.click();
+        textEntryDialogBtn.click();
 
         WebElement usernameField = driver.findElement(AppiumBy.id("io.appium.android.apis:id/username_edit"));
         WebElement passwordField = driver.findElement(AppiumBy.id("io.appium.android.apis:id/password_edit"));
-        WebElement okBtn = driver.findElement(AppiumBy.id("android:id/button1"));
 
         String username = "sirtestsalot";
         String password = "SuperSecretPassword!0";
@@ -99,20 +92,20 @@ public class AlertDialogs extends BaseTest {
             System.out.println("Autosave password prompt not displayed, moving to next step");
         }
 
-        driver.findElement(textEntryDialogBtnLoc).click();
+        textEntryDialogBtn.click();
 
         Assert.assertEquals(driver.findElement(AppiumBy.id("io.appium.android.apis:id/username_edit")).getText(), "sirtestsalot");
 
-        Assert.assertTrue(!driver.findElement(AppiumBy.id("io.appium.android.apis:id/password_edit")).getText().isEmpty(), "Password element should have encrypted value in text attribute");
+        Assert.assertFalse(driver.findElement(AppiumBy.id("io.appium.android.apis:id/password_edit")).getText().isEmpty(), "Password element should display masked values in text field");
 
         Assert.assertEquals(driver.findElement(AppiumBy.id("io.appium.android.apis:id/password_edit")).getText().length(), password.length(), "Masked password text length should equal password length");
     }
 
     @Test
     public void listItemsDialogAlert(){
-        driver.findElement(appsBtnLoc).click();
-        driver.findElement(alertsBtnLoc).click();
-        driver.findElement(listDialogBtnLoc).click();
+        appsBtn.click();
+        alertsBtn.click();
+        listDialogBtn.click();
 
         List<WebElement> listItems = driver.findElements(By.xpath("//android.widget.TextView[@resource-id = 'android:id/text1']"));
         for(WebElement item : listItems){
@@ -132,9 +125,9 @@ public class AlertDialogs extends BaseTest {
 
     @Test
     public void okCancelDialog(){
-        driver.findElement(appsBtnLoc).click();
-        driver.findElement(alertsBtnLoc).click();
-        driver.findElement(okCancelDialogBtnLoc).click();
+        appsBtn.click();
+        alertsBtn.click();
+        okCancelDialogBtn.click();
 
         Assert.assertTrue(driver.findElement(AppiumBy.id("android:id/alertTitle")).isDisplayed());
         Assert.assertEquals(driver.findElement(AppiumBy.id("android:id/alertTitle")).getText(), "Lorem ipsum dolor sit aie consectetur adipiscing\n" +
@@ -145,9 +138,9 @@ public class AlertDialogs extends BaseTest {
 
     @Test
     public void checkboxesAlert(){
-        driver.findElement(appsBtnLoc).click();
-        driver.findElement(alertsBtnLoc).click();
-        driver.findElement(repeatAlarmBtnLoc).click();
+        appsBtn.click();
+        alertsBtn.click();
+        repeatAlarmBtn.click();
 
         List<WebElement> checkBoxesBefore = driver.findElements(AppiumBy.className("android.widget.CheckedTextView"));
 
@@ -166,7 +159,7 @@ public class AlertDialogs extends BaseTest {
         }
 
         driver.findElement(AppiumBy.id("android:id/button1")).click();
-        driver.findElement(repeatAlarmBtnLoc).click();
+        repeatAlarmBtn.click();
 
         List<WebElement> checkBoxesAfter = driver.findElements(AppiumBy.className("android.widget.CheckedTextView"));
         for(WebElement box: checkBoxesAfter){
@@ -176,11 +169,11 @@ public class AlertDialogs extends BaseTest {
 
     @Test
     public void progressDialog(){
-        driver.findElement(appsBtnLoc).click();
-        driver.findElement(alertsBtnLoc).click();
-        driver.findElement(progressDialogBtnLoc).click();
+        appsBtn.click();
+        alertsBtn.click();
+        progressDialogBtn.click();
 
         System.out.println(driver.findElement(By.xpath("//*[contains(@class, 'ProgressBar')]")));
-//        Assert.assertTrue(driver.findElement(By.xpath("//*[contains(@class, 'ProgressBar')]")).isDisplayed());
+//        Assert.assertTrue(progressBar.isDisplayed());  //element exists only while loading, will get stale ele
     }
 }

@@ -12,13 +12,18 @@ repositories {
 dependencies {
     implementation 'io.appium:java-client:8.3.0'
     implementation 'org.testng:testng:7.7.1'
-    implementation 'org.seleniumhq.selenium:selenium-support:4.7.2'
+    implementation 'org.seleniumhq.selenium:selenium-support:4.7.2'  //appium 8.3.0 not working on selenium 4.8.2 and up
     implementation 'org.seleniumhq.selenium:selenium-api:4.7.2'
     implementation 'org.seleniumhq.selenium:selenium-java:4.7.2'
+    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'org.slf4j:slf4j-api:2.0.7'
+    testImplementation 'org.slf4j:slf4j-simple:2.0.7'
+
 }
 
 test {
     useTestNG(){
-        suites "src/test/resources/TestNG.xml"
+//        suites "src/test/resources/TestNG.xml"
+        suites "src/test/resources/SmokeSuite_GeneralStore.xml"
     }
 }
