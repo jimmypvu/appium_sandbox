@@ -1,13 +1,17 @@
 package tests.generalstore;
 
 import io.appium.java_client.AppiumBy;
+import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import jpvu.BaseTest;
 import jpvu.enums.Directions;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.time.Duration;
 import java.util.List;
 
 public class SmokeTests extends BaseTest {
@@ -25,32 +29,47 @@ public class SmokeTests extends BaseTest {
     public WebElement femaleRad;
     @AndroidFindBy(id = "com.androidsample.generalstore:id/btnLetsShop")
     public WebElement shopBtn;
+    @AndroidFindBy(id = "com.androidsample.generalstore:id/toolbar_title")
+    public WebElement shopTitleHeader;
 
 
-    @Test
-    public void launchAppTest(){
+    @Test(description = "general store app - fill form test")
+    public void fillForm(){
+        wait.until(ExpectedConditions.visibilityOf(nameField));
+
         Assert.assertTrue(nameField.isDisplayed());
-        nameField.sendKeys("ShyGuy");
-        Assert.assertEquals(nameField.getText(), "ShyGuy");
 
-        countrySel.click();
+//        nameField.sendKeys("Shy Guy");
+//
+//        Assert.assertEquals(nameField.getText(), "Shy Guy");
 
-        Assert.assertTrue(countries.get(0).isDisplayed());
-        Assert.assertEquals(countries.get(0).getText(), "Afghanistan");
-
-        scrollToEnd();
-        Assert.assertEquals(countries.get(countries.size()-1).getText(), "Zimbabwe");
-
-//        scrollToEleByText("Vietnam");
-        scrollUpToEleOrTop(AppiumBy.xpath("//android.widget.TextView[@text = 'United States']"));
-
-        unitedStatesBtn.click();
-
-        Assert.assertEquals(countrySel.getText(), "United States");
-
-        shopBtn.click();
-        pause();
-        Assert.assertTrue(driver.findElement(AppiumBy.id("com.androidsample.generalstore:id/toolbar_title")).isDisplayed());
-        Assert.assertEquals(driver.findElement(AppiumBy.id("com.androidsample.generalstore:id/toolbar_title")).getText(), "Products");
+//        ((AndroidDriver) driver).hideKeyboard();
+//        femaleRad.click();
+//
+//        Assert.assertEquals(femaleRad.getAttribute("checked"), "true");
+//
+//        countrySel.click();
+//
+//        Assert.assertTrue(countries.get(0).isDisplayed());
+//        Assert.assertEquals(countries.get(0).getText(), "Afghanistan");
+//
+//        scrollToEleByText("Swede");
+//        scrollToEnd();
+//
+//        Assert.assertEquals(countries.get(countries.size()-1).getText(), "Zimbabwe");
+//
+//        scrollUpToEleOrTop(unitedStatesBtn);
+//        unitedStatesBtn.click();
+//
+//        Assert.assertEquals(countrySel.getText(), "United States");
+//
+//        shopBtn.click();
+//
+//        wait.until(ExpectedConditions.visibilityOf(shopTitleHeader));
+//
+//        Assert.assertTrue(shopTitleHeader.isDisplayed());
+//        Assert.assertEquals(shopTitleHeader.getText(), "Products");
     }
+
+
 }

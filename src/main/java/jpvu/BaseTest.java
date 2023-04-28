@@ -12,11 +12,11 @@ import io.appium.java_client.service.local.flags.GeneralServerFlag;
 import jpvu.enums.DirectionToStringConverter;
 import jpvu.enums.Directions;
 import jpvu.utils.ApkManager;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeMethod;
@@ -24,18 +24,23 @@ import org.testng.annotations.BeforeSuite;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
 public class BaseTest {
     private final String APPIUM_MAIN_PATH = "C:/Users/jimmy/AppData/Roaming/npm/node_modules/appium/build/lib/main.js";
     private String apkPath = ApkManager.setApkPath();
-    public AppiumDriver driver;
+    public static AppiumDriver driver;
     public AppiumDriverLocalService service;
     public JavascriptExecutor jse;
+    public WebDriverWait wait;
 
     @BeforeSuite
     public void startAppiumServer(){
@@ -48,7 +53,7 @@ public class BaseTest {
     }
 
     @BeforeMethod
-    public void setupDriver() throws MalformedURLException {
+    public void setupDriver(Method method) throws MalformedURLException {
         UiAutomator2Options options = new UiAutomator2Options();
         options.setDeviceName("pixel4v11");
         options.setAvd("pixel4v11");
@@ -56,16 +61,43 @@ public class BaseTest {
         options.setPlatformVersion("11");
         options.setAutomationName("UiAutomator2");
         options.setApp(apkPath);
+
         driver = new AndroidDriver(new URL("http://127.0.0.1:4723"), options);
+
+//        for running on saucelabs cloud
+//        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//        String timestamp = LocalDateTime.now().format(dtf);
+//
+//        MutableCapabilities caps = new MutableCapabilities();
+//        caps.setCapability("platformName", "Android");
+//        caps.setCapability("appium:app", "storage:filename=General-Store.apk"); // The filename of the mobile app
+//        caps.setCapability("appium:deviceName", "Google Pixel 4 GoogleAPI Emulator");
+//        caps.setCapability("appium:platformVersion", "11.0");
+//        caps.setCapability("appium:automationName", "UiAutomator2");
+//        MutableCapabilities sauceOptions = new MutableCapabilities();
+//        sauceOptions.setCapability("appiumVersion", "2.0.0-beta56");
+//        sauceOptions.setCapability("build", "Android Tests: " + timestamp);
+//        sauceOptions.setCapability("name", method.getName());
+//        caps.setCapability("sauce:options", sauceOptions);
+//
+//        String sauceUsername = System.getenv("SAUCE_USERNAME");
+//        String sauceToken = System.getenv("SAUCE_ACCESS_KEY");
+//        URL url = new URL("https://" + sauceUsername + ":" + sauceToken + "@ondemand.us-west-1.saucelabs.com:443/wd/hub");
+//        driver = new AndroidDriver(url, caps);
+
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 
         jse = driver;
+
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10), Duration.ofMillis(250));
 
         PageFactory.initElements(new AppiumFieldDecorator(driver), this);
     }
 
     @AfterMethod
-    public void quitDriver(){
+    public void quitDriver(ITestResult result){
+//        jse.executeScript("sauce:job-result=" + (result.isSuccess() ? "passed" : "failed"));
+
         driver.quit();
     }
 
@@ -86,8 +118,13 @@ public class BaseTest {
     }
 
     public void scrollToEleByText(String text){
+        System.out.println("Scrolling into view element containing text: \""+text+"\"");
+
         //use google's ui automator and ui selector
-        driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector()).scrollIntoView(text(\""+text+"\"));"));
+        driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(textContains(\""+text+"\").instance(0));"));
+
+        System.out.println("Found element containing text: \""+text+"\"");
+
     }
 
     public void scrollToEnd(){
@@ -319,13 +356,17 @@ public class BaseTest {
     public void pause(){
         try{
             Thread.sleep(2500);
-        }catch(Exception ignored){}
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void pause(int millis){
         try{
             Thread.sleep(millis);
-        }catch(Exception ignored){}
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
 }
